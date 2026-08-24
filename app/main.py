@@ -6,10 +6,12 @@ def move_file(command: str) -> None:
     if len(parsed_command) != 3 or parsed_command[0] != "mv":
         return
     com, source, destination = parsed_command
-    if destination[-1] == "/":
+    if destination.endswith("/"):
         destination = os.path.join(destination, os.path.basename(source))
-    if "/" not in destination:
-        os.rename(source, destination)
-    else:
+    if "/" in destination:
         os.makedirs(os.path.dirname(destination), exist_ok=True)
-        os.rename(source, destination)
+    with open(source) as old_file:
+        content = old_file.read()
+    with open(destination, "w") as new_file:
+        new_file.write(content)
+    os.remove(source)
